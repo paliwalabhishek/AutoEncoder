@@ -56,6 +56,9 @@ def qmi(y_true, y_pred):
     return -loss
 
 
+
+
+
 # Create the model
 model = Sequential()
 model.add(Dense(350, input_shape=input_shape, activation='relu'))

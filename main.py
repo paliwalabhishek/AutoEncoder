@@ -16,8 +16,8 @@ from keras import backend as K
 from keras.utils import to_categorical
 
 code_size = 5
-epochs = 10
-batch_size = 100
+epochs = 100
+batch_size = 200
 nb_classes = 10
 
 def preprocess_data(train_data, test_data):
@@ -54,37 +54,36 @@ print("Test set (images) shape: {shape}".format(shape=testX.shape))
 Y_train = np_utils.to_categorical(trainY, nb_classes)
 Y_test = np_utils.to_categorical(testY, nb_classes)
 
-train_X,valid_X,train_Y,valid_Y = train_test_split(trainX, Y_train, test_size=0.2, random_state=13)
+#train_X,valid_X,train_Y,valid_Y = train_test_split(trainX, Y_train, test_size=0.2, random_state=13)
 
-enc = Sequential()
-enc.add(Dense(500, activation='tanh', input_dim=784))
-enc.add(BatchNormalization())
-enc.add(Dense(200, activation='tanh'))
-enc.add(BatchNormalization())
-enc.add(Dense(code_size, activation='linear'))
+for code_size in range(50, 60, 10):
+    enc = Sequential()
+    enc.add(Dense(500, activation='tanh', input_dim=784))
+    enc.add(BatchNormalization())
+    enc.add(Dense(200, activation='tanh'))
+    enc.add(BatchNormalization())
+    enc.add(Dense(code_size, activation='linear'))
 
-dec = Sequential()
-dec.add(Dense(200, input_dim=code_size, activation='tanh'))
-dec.add(Dense(500, activation='tanh'))
-dec.add(Dense(784, activation='sigmoid'))
+    dec = Sequential()
+    dec.add(Dense(200, input_dim=code_size, activation='tanh'))
+    dec.add(Dense(500, activation='tanh'))
+    dec.add(Dense(784, activation='sigmoid'))
 
-model = Sequential()
-model.add(enc)
-model.add(dec)
+    model = Sequential()
+    model.add(enc)
+    model.add(dec)
 
-model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(train_X, train_X.reshape((-1, 784)), batch_size=batch_size, epoch=epochs,
-                    validation_data=(valid_X, valid_X))
+    history = model.fit(trainX, trainX.reshape((-1, 784)), batch_size=batch_size, verbose=2, epochs=epochs, validation_split=0.2)
 
-encoded_train_imgs = np.array(enc.predict(train_X))
-encoded_test_imgs = np.array(enc.predict(testX))
+    encoded_train_imgs = np.array(enc.predict(trainX))
+    encoded_test_imgs = np.array(enc.predict(testX))
 
-## Saving Data
-np.save("encoded_train_imgs_" + str(code_size) + ".npy", encoded_train_imgs)
-np.save("train_labels_" + str(code_size) + ".npy", train_Y)
-np.save("encoded_test_imgs_" + str(code_size) + ".npy", encoded_test_imgs)
-np.save("test_labels_" + str(code_size) + ".npy", Y_test)
+    ## Saving Data
+    np.save("encoded_train_imgs_" + str(code_size) + ".npy", encoded_train_imgs)
+    np.save("encoded_test_imgs_" + str(code_size) + ".npy", encoded_test_imgs)
+
 """
 decoded_imgs = dec.predict(encoded_imgs)
 n = 10  # How many digits we will display
@@ -105,7 +104,7 @@ for i in range(n):
     ax.get_yaxis().set_visible(False)
 plt.show()
 """
-
+"""
 # summarize history for accuracy
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
@@ -122,4 +121,4 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-
+"""
