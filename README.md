@@ -1,4 +1,4 @@
-# Stacked  Auto-Encoder (Neural Networks and Deep Learning Project)\
+# Stacked  Auto-Encoder (Neural Networks and Deep Learning Project)
 
 In this porject I took three different approaches tofeature extraction being utilized in supervised and unsupervisedlearning technique. 
 * The first goal of this project is presented as ain-depth comparison of stacked auto-encoder with support vectormachine  and  multi-layer  perceptron.  
